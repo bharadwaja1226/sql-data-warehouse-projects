@@ -1,4 +1,24 @@
-CREATE VIEW gold.dim_customers
+/* 
+_________________________________________________________________________________________________________________
+DDL SCRIPT : create gold views
+__________________________________________________________________________________________________________________
+ script purpouse :
+   this script create view for the gold layer in the data warehouse 
+the gold layer representets the final dimension and fact table  [star schema]
+
+Each view performs transformations and combines data from the silver layer 
+to produce a clean enriched and business usag:
+
+-- This views can be queried directly for analytsis and reporting */
+
+-------------------------------------------------------------------------
+-- CREATE DIM TABLE = gold.dim_customers
+-------------------------------------------------------------------------
+IF OBJECT_ID ('gold.dim_customers','V') IS NOT NULL
+DROP VIEW 	gold.dim_customers
+GO
+
+CREATE VIEW  gold.dim_customers AS
 
 SELECT 
 ROW_NUMBER () OVER (ORDER BY cst_id) as customer_key,
@@ -12,18 +32,26 @@ CASE WHEN ci.cst_gndr != 'U/N' THEN ci.cst_gndr
 	ELSE COALESCE (er.gen,'U/N')
 END gendar,
     er.bdate as birthday,
-  	ci.cst_create_date create_date
+	ci.cst_create_date create_date
 FROM  Silver.crm_cust_info as ci
 LEFT JOIN Silver.erp_CUST_AZ12 as er
 ON ci.cst_key = er.cid
 LEFT JOIN Silver.erp_loc_a101 AS lo
 ON ci.cst_key = lo.cid
 
-CREATE  VIEW  gold.dim_products as 
+-----------------------------------------------------------------------------------------------------------------
+--CREATE DIM TABLE = gold.dim_products
+-----------------------------------------------------------------------------------------------------------------
+
+IF OBJECT_ID ('gold.dim_products','V') IS NOT NULL
+DROP VIEW gold.dim_products
+GO
+
+CREATE VIEW gold.dim_products as 
 
 SELECT 
-  ROW_NUMBER () over (order by pr.prd_start, prd_key) as product_key,
-  pr.prd_id product_id,
+    ROW_NUMBER () over (order by pr.prd_start, prd_key) as product_key,
+    pr.prd_id product_id,
 	pr.prd_key product_number,
 	pr.prd_nm product_name,
 	COALESCE (cat.id,'U/N')  as category_id,
@@ -37,8 +65,16 @@ FROM Silver.crm_prd_infos as pr
 LEFT JOIN Silver.erp_px_cat_g1v2 as cat
 ON pr.cat_key = cat.id
 
-CREATE VIEW gold.fact_sales as 
-  
+------------------------------------------------------------------------------------------------------
+-- CREATE FACT TABLE = gold.fact_sales
+------------------------------------------------------------------------------------------------------
+
+IF OBJECT_ID ('gold.fact_sales','v') IS NOT NULL
+DROP VIEW gold.fact_sales 
+GO
+
+CREATE VIEW   gold.fact_sales as 
+
 SELECT 
       sd.sls_cust_id as customer_id,
       pr.product_key,
