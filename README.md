@@ -31,6 +31,9 @@ A concise 2–3 sentence summary of what this project solves. Explain the busine
 1. **Revenue Growth:** Which product categories drove the highest month-over-month revenue?
 2. **Customer Segmentation:** Who are the top 10% of customers by lifetime spend?
 3. **Regional Trends:** Which geographic zones have declining repeat purchases?
+   
+## data architecher
+https://drive.google.com/file/d/1khsJ9K94o9yehFiF9-yjfKBoNRzwjE9i/view?usp=drive_link
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
